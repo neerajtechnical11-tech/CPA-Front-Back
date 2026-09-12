@@ -1,4 +1,4 @@
-"""End-to-end analysis - Neeraj: uploaded document -> compliance score + risk findings.
+"""End-to-end analysis - Neeraj Kumar Verma: uploaded document -> compliance score + risk findings.
 
 Full-coverage strategy: pull every baseline control (with its stored embedding)
 from Azure AI Search, then for each control take the MAX cosine similarity across
