@@ -1,0 +1,50 @@
+[
+  {
+    "framework": "NIST AI RMF",
+    "control_id": "GOVERN-1.1",
+    "title": "Legal and regulatory requirements are understood and managed",
+    "text": "Legal and regulatory requirements involving AI are understood, managed, and documented.",
+    "category": "Govern",
+    "criticality": "High"
+  },
+  {
+    "framework": "NIST AI RMF",
+    "control_id": "MAP-1.1",
+    "title": "Context is established and understood",
+    "text": "Intended purpose, context of use, and expectations of the AI system are documented and understood.",
+    "category": "Map",
+    "criticality": "Medium"
+  },
+  {
+    "framework": "ISO 42001",
+    "control_id": "A.6.2.2",
+    "title": "AI system impact assessment",
+    "text": "The organization shall assess impacts of the AI system to individuals and society throughout its lifecycle.",
+    "category": "Impact assessment",
+    "criticality": "High"
+  },
+  {
+    "framework": "ISO 42001",
+    "control_id": "A.9.2",
+    "title": "Processes for responsible use of AI systems",
+    "text": "The organization shall define and document processes for the responsible use of AI systems.",
+    "category": "Use",
+    "criticality": "Medium"
+  },
+  {
+    "framework": "NIST 800-53",
+    "control_id": "AU-2",
+    "title": "Event logging",
+    "text": "The organization identifies the types of events that the system is capable of logging in support of the audit function.",
+    "category": "Audit and Accountability",
+    "criticality": "Medium"
+  },
+  {
+    "framework": "NIST 800-53",
+    "control_id": "RA-3",
+    "title": "Risk assessment",
+    "text": "The organization conducts an assessment of risk, including the likelihood and magnitude of harm.",
+    "category": "Risk Assessment",
+    "criticality": "High"
+  }
+]

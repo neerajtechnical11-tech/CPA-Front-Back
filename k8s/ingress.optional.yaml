@@ -1,0 +1,31 @@
+# OPTIONAL - NOT NEEDED if the frontend Service is type LoadBalancer (it now is).
+# Use this ONLY if you prefer host-based routing on the SHARED ingress IP
+# (20.62.224.193) instead of a dedicated LoadBalancer IP. Do not apply both:
+# with the LoadBalancer Service you already have a dedicated public IP.
+#
+# If you use it, first change frontend.yaml's Service back to type: ClusterIP,
+# then point a DNS host at the ingress-nginx IP.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: compliance-v2
+  namespace: compliance-v2
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"     # Streamlit websocket
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/affinity: "cookie"             # sticky sessions
+    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: v2.compliance.local          # change to your host; must differ from the default app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 8501
+  # For TLS, add a `tls:` block referencing a cert secret (self-signed or cert-manager).

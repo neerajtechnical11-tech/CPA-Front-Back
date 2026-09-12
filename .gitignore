@@ -1,0 +1,7 @@
+# secrets - never commit
+backend-svc/config/settings.env
+# python / db
+**/__pycache__/
+*.pyc
+*.db
+.venv/

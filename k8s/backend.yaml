@@ -1,0 +1,49 @@
+# Backend: FastAPI + all logic. Secret mounted at runtime; not exposed publicly
+# (ClusterIP) - only the frontend (in-cluster) calls it.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: compliance-v2
+  labels: { app: backend }
+spec:
+  replicas: 1                      # single replica: auth.db is local SQLite (see notes)
+  selector:
+    matchLabels: { app: backend }
+  template:
+    metadata:
+      labels: { app: backend }
+    spec:
+      containers:
+        - name: backend
+          image: acrcompliancedoc.azurecr.io/compliance-backend:latest   # built from backend-svc/
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: config
+              mountPath: /app/config          # app reads /app/config/settings.env
+              readOnly: true
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 10
+          resources:
+            requests: { cpu: "250m", memory: "512Mi" }
+            limits:   { cpu: "1",    memory: "1Gi" }
+      volumes:
+        - name: config
+          secret:
+            secretName: compliance-env         # created from settings.env (see secret.example.yaml)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend                    # <- the frontend reaches this as http://backend:8000
+  namespace: compliance-v2
+spec:
+  type: ClusterIP                  # internal only
+  selector: { app: backend }
+  ports:
+    - port: 8000
+      targetPort: 8000

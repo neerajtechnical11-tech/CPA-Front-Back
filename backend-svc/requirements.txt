@@ -1,0 +1,18 @@
+# Backend service - all AI/business logic + FastAPI (NO streamlit)
+azure-identity>=1.17
+azure-search-documents>=11.5.1
+azure-cosmos>=4.7
+azure-storage-blob>=12.20
+openai>=1.40
+pypdf>=4.2
+python-docx>=1.1
+openpyxl>=3.1
+python-pptx>=0.6
+python-dotenv>=1.0
+numpy>=1.26
+cryptography>=42.0
+Authlib>=1.3.2
+langfuse>=4.0
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9

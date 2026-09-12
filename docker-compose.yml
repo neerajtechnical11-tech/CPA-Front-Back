@@ -1,0 +1,26 @@
+# Local dev: run both containers together.
+#   docker compose up --build
+#   open http://localhost:8501   (login admin/admin on first run)
+services:
+  backend:
+    build: ./backend-svc
+    ports:
+      - "8000:8000"                       # FastAPI (also reachable in-network as http://backend:8000)
+    volumes:
+      # settings.env stays OUT of the image; mounted at runtime (like a k8s Secret).
+      - ./backend-svc/config/settings.env:/app/config/settings.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    # NOTE: auth.db is ephemeral here (recreated on restart, seeds admin/admin).
+    # For persistence, point auth.py DB_PATH at /data and mount a volume there.
+
+  frontend:
+    build: ./frontend-svc
+    ports:
+      - "8501:8501"                       # Streamlit UI
+    environment:
+      # The whole point: the frontend finds the backend by SERVICE NAME.
+      # Locally compose resolves "backend"; in AKS a Service named "backend" resolves the same way.
+      - BACKEND_API_URL=http://backend:8000
+    depends_on:
+      - backend

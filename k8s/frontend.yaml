@@ -1,0 +1,50 @@
+# Frontend: Streamlit UI. Exposed on its OWN public IP via a LoadBalancer Service,
+# so compliance-v2 gets a separate IP from the default app. Finds the backend by
+# Service DNS (http://backend:8000).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: compliance-v2
+  labels: { app: frontend }
+spec:
+  replicas: 1                      # Streamlit keeps session in-memory; use sessionAffinity if >1
+  selector:
+    matchLabels: { app: frontend }
+  template:
+    metadata:
+      labels: { app: frontend }
+    spec:
+      containers:
+        - name: frontend
+          image: acrcompliancedoc.azurecr.io/compliance-frontend:latest  # built from frontend-svc/
+          ports:
+            - containerPort: 8501
+          env:
+            - name: BACKEND_API_URL
+              value: "http://backend:8000"     # same-namespace Service DNS
+          readinessProbe:
+            httpGet: { path: /_stcore/health, port: 8501 }
+            initialDelaySeconds: 15
+            periodSeconds: 30
+          resources:
+            requests: { cpu: "100m", memory: "256Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: compliance-v2
+  # --- OPTIONAL: pin a FIXED (static) public IP ---
+  # 1) reserve a Standard Public IP in the node resource group, then
+  # 2) uncomment the annotation + spec.loadBalancerIP below.
+  # annotations:
+  #   service.beta.kubernetes.io/azure-load-balancer-resource-group: MC_cyberai_compliance-aks_eastus
+spec:
+  type: LoadBalancer               # <- Azure assigns a NEW public IP for compliance-v2
+  # loadBalancerIP: <your-reserved-static-ip>   # uncomment (with the annotation) for a fixed IP
+  selector: { app: frontend }
+  ports:
+    - port: 80                     # users browse http://<new-ip>  (no host header needed)
+      targetPort: 8501             # Streamlit inside the pod
